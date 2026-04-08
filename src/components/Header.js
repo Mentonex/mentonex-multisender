@@ -131,26 +131,29 @@ function Header({ change, web3m, provider1 }) {
     await disconnect();
   };
 
-  useEffect(async () => {
-    try {
-      if (acc) {
-        provider = await web3Modal.connect();
-        const web3 = new Web3(provider);
-        const accounts = await web3.eth.getAccounts();
-        web3m(web3);
-        provider1(provider);
-        setaccountid(accounts[0]);
-        
-        // Fetch balance
-        if (accounts[0]) {
-          const balanceWei = await web3.eth.getBalance(accounts[0]);
-          const balanceEth = web3.utils.fromWei(balanceWei, 'ether');
-          setBalance(parseFloat(balanceEth).toFixed(4));
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        if (acc) {
+          provider = await web3Modal.connect();
+          const web3 = new Web3(provider);
+          const accounts = await web3.eth.getAccounts();
+          web3m(web3);
+          provider1(provider);
+          setaccountid(accounts[0]);
+          
+          // Fetch balance
+          if (accounts[0]) {
+            const balanceWei = await web3.eth.getBalance(accounts[0]);
+            const balanceEth = web3.utils.fromWei(balanceWei, 'ether');
+            setBalance(parseFloat(balanceEth).toFixed(4));
+          }
         }
+      } catch (err) {
+        console.log(err.message);
       }
-    } catch (err) {
-      console.log(err.message);
     }
+    fetchData();
   }, [acc, web3m, provider1]);
 
   useEffect(() => {
@@ -163,7 +166,7 @@ function Header({ change, web3m, provider1 }) {
       }
     }
     fetch();
-  }, []);
+  }, [change]);
 
   useEffect(() => {
     async function fetch() {

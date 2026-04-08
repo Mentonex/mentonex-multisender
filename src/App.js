@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  BrowserRouter as Router,
   Route,
   Switch,
 } from "react-router-dom";
@@ -8,7 +7,7 @@ import Header from "./components/Header";
 import Main from "./components/Main";
 
 function App() {
-  const [chainid, setchainid] = useState();
+  const [, setchainid] = useState();
   const [acc, setacc] = useState(false);
   const [web3main, setweb3main] = useState();
   const [prov, setprov] = useState();

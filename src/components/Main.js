@@ -1,36 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { AiFillCaretRight } from "react-icons/ai";
 
 import nft from "../abi/abi.json";
 import ERC20 from "../abi/ERC20.json";
 import fromExponential from "from-exponential";
 
 function Main({ acc, web3main, prov }) {
-  const location = useLocation();
-  const { id } = useParams();
   const [next, setnext] = useState(0);
-  const [done, setdone] = useState(false);
-  const [csvFile, setCsvFile] = useState();
+  const [done] = useState(false);
+  const [, setCsvFile] = useState();
   const [tokval, settokval] = useState();
   const [tokname, settokname] = useState();
   const [chainid, setchainid] = useState();
-  const [show, setShow] = useState(false);
+  const [, setShow] = useState(false);
   const [fdata, setfdata] = useState();
-  const handleClose = () => setShow(false);
   const [text, settext] = useState();
-  const [all, setall] = useState();
+  const [, setall] = useState();
   const [adlist, setadlist] = useState([]);
   const [vallist, setvallist] = useState();
   const [tok, settok] = useState();
   const [total, settotal] = useState();
   const [balance, setbalance] = useState();
-  const [mirror, setmirror] = useState();
+  const [, setmirror] = useState();
   const [err, seterr] = useState([]);
   const [errlist, seterrlist] = useState([]);
   const [lineerr, setlineerr] = useState([]);
   const [est, setest] = useState();
-  const [maintoken, setmaintoken] = useState();
+  const [, setmaintoken] = useState();
   const [add, setadd] = useState();
   const [tname, settname] = useState("");
   const [link, setlink] = useState("");
@@ -64,12 +59,10 @@ function Main({ acc, web3main, prov }) {
     });
     if (web3main && acc) {
       const errlistv = filma?.map((v, i) => {
-        if (v[0] === "" || v[0] === undefined || v[0] === "\r" ? null : v[0]) {
+        if (v[0] && v[0] !== "" && v[0] !== undefined && v[0] !== "\r") {
           return [web3main.utils.isAddress(v[0]), i + 1];
         }
-      });
-      const errlistM = errlistv?.filter(function (el) {
-        return el ? el[0] : null != null;
+        return null;
       });
       seterrlist(errlistv);
     }
@@ -78,40 +71,41 @@ function Main({ acc, web3main, prov }) {
     setvallist(filval);
   };
 
-  useEffect(async () => {
-    if (web3main && acc && prov) {
-      const chainId = await prov.request({ method: "eth_chainId" });
+  useEffect(() => {
+    async function fetchChainData() {
+      if (web3main && acc && prov) {
+        const chainId = await prov.request({ method: "eth_chainId" });
 
-      setchainid(chainId);
+        setchainid(chainId);
 
-      if (chainId == 0x38) {
-        setadd("0xDb103fd28Ca4B18115F5Ce908baaeed7E0f1f101");
-        settname("BNB");
-        setlink("https://bscscan.com/tx/");
-      } else if (chainId == 0x61) {
-        setadd("0x2095D88e6E3aac59afd8aC33e919E0D47E7158D6");
-        settname("BNB");
-        setlink("https://testnet.bscscan.com/search?f=0&q=");
-      } else if (chainId == 0x89) {
-        setadd("0xE77DCC952bF415057FB3Dca18c75Fe1F5cbF96Cc");
-        settname("MATIC");
-        setlink("https://polygonscan.com/tx/");
-      } else if (chainId == 0x13881) {
-        setadd("0x3666759E577b3C05A4DeEB2dF62879c36567Ee01");
-        settname("MATIC");
-        setlink("https://mumbai.polygonscan.com/tx/");
-      } else if (chainId == 0xa86a) {
-        setadd("0x0327b2E62eD0a117f99D32b57ba69E8dd7dD6072");
-        settname("AVAX");
-        setlink("https://snowtrace.io/tx/");
-      } else if (chainId == 0xa869) {
-        setadd("0x3666759E577b3C05A4DeEB2dF62879c36567Ee01");
-        settname("AVAX");
-        setlink("https://testnet.snowtrace.io/tx/");
-      } else {
-        return false;
+        if (chainId === 0x38) {
+          setadd("0xDb103fd28Ca4B18115F5Ce908baaeed7E0f1f101");
+          settname("BNB");
+          setlink("https://bscscan.com/tx/");
+        } else if (chainId === 0x61) {
+          setadd("0x2095D88e6E3aac59afd8aC33e919E0D47E7158D6");
+          settname("BNB");
+          setlink("https://testnet.bscscan.com/search?f=0&q=");
+        } else if (chainId === 0x89) {
+          setadd("0xE77DCC952bF415057FB3Dca18c75Fe1F5cbF96Cc");
+          settname("MATIC");
+          setlink("https://polygonscan.com/tx/");
+        } else if (chainId === 0x13881) {
+          setadd("0x3666759E577b3C05A4DeEB2dF62879c36567Ee01");
+          settname("MATIC");
+          setlink("https://mumbai.polygonscan.com/tx/");
+        } else if (chainId === 0xa86a) {
+          setadd("0x0327b2E62eD0a117f99D32b57ba69E8dd7dD6072");
+          settname("AVAX");
+          setlink("https://snowtrace.io/tx/");
+        } else if (chainId === 0xa869) {
+          setadd("0x3666759E577b3C05A4DeEB2dF62879c36567Ee01");
+          settname("AVAX");
+          setlink("https://testnet.snowtrace.io/tx/");
+        }
       }
     }
+    fetchChainData();
   }, [web3main, acc, prov]);
 
   const breakdnew = async (e) => {
@@ -285,7 +279,7 @@ function Main({ acc, web3main, prov }) {
             fromExponential(parseInt(Number(v) * Math.pow(10, 18)))
           )
         );
-        if (chainid == 0x61) {
+        if (chainid === 0x61) {
           setmaintoken("0xb2c3C9523E9b8FC44F677e47Aa034fC66974DA1E");
           let token = new web3main.eth.Contract(
             nft,
@@ -310,7 +304,7 @@ function Main({ acc, web3main, prov }) {
             })
             .catch();
         }
-        if (chainid == 0x13881) {
+        if (chainid === 0x13881) {
           setmaintoken("0x5a2bcecA1B040dad76Bc107EE627b7187bbAe91C");
           let token = new web3main.eth.Contract(
             nft,
@@ -335,7 +329,7 @@ function Main({ acc, web3main, prov }) {
             })
             .catch();
         }
-        if (chainid == 0xfa2) {
+        if (chainid === 0xfa2) {
           setmaintoken("0x15C0311cD2e0e89c390B43B4e280B8f853C69bD4");
           let token = new web3main.eth.Contract(
             nft,
@@ -541,9 +535,9 @@ function Main({ acc, web3main, prov }) {
               onChange={(e) => settok(e.target.value)}
             />
             <datalist id="tok">
-              {chainid == 0x61 && <option value="BNB">BNB Smart Chain Native Currency</option>}
-              {chainid == 0x13881 && <option value="MATIC">POLYGON</option>}
-              {chainid == 0xfa2 && <option value="FTM">FANTOM</option>}
+              {chainid === 0x61 && <option value="BNB">BNB Smart Chain Native Currency</option>}
+              {chainid === 0x13881 && <option value="MATIC">POLYGON</option>}
+              {chainid === 0xfa2 && <option value="FTM">FANTOM</option>}
             </datalist>
 
             <label className="form-label" style={{marginTop: '24px'}}>Recipients & Amounts</label>
